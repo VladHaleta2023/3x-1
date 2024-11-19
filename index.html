@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>3x+1</title>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    body {
+        margin: 12px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    input[type=text] {
+        font-size: 18px;
+        padding: 4px;
+        max-width: 240px;
+        margin: 8px 0px;
+        margin-right: 12px;
+        width: 100%;
+    }
+
+    label#lblNumber {
+        margin: 8px 0px;
+        margin-right: 12px;
+        font-size: 18px;
+    }
+
+    button#btnNumber {
+        padding: 8px 24px;
+        cursor: pointer;
+        border: none;
+        font-size: 18px;
+        background-color: cornflowerblue;
+    }
+</style> 
+<body>
+    <div>
+        <label for="number" id="lblNumber">Number: </label>
+        <input type="text" name="number" id="number">
+        <button id="btnNumber" onclick="drawGraphic()">Draw</button>
+    </div>
+    <br>
+    <div id="myChart" style="width: 100%; height:100%; max-width: 800px;"></div>
+    <br>
+    <div class="container" style="margin: 0px; padding: 0px;">      
+        <table class="table table-bordered" style="width: 100%; max-width: 200px; cursor: pointer;">
+          <thead style="background-color: cornflowerblue; color: black; font-size: 18px;">
+            <tr>
+              <th>Numbers</th>
+            </tr>
+          </thead>
+          <tbody style="font-weight: bold; font-size: 16px;" id="tableNumber">
+
+          </tbody>
+        </table>
+      </div>
+</body>
+<script>
+    google.charts.load('current',{packages:['corechart']});
+    google.charts.setOnLoadCallback(drawGraphic);
+
+    function drawGraphic() {
+        let number = parseInt(document.getElementById("number").value);
+        let table = document.getElementById("tableNumber");
+        table.innerHTML = "";
+
+        if (isNaN(number) || !isFinite(number))
+            number = 1
+
+        let xValues = [];
+        let yValues = [];
+
+        index = 1;
+        while (number != 1) {
+            index += 1
+            xValues.push(index);
+            if (number % 2 == 0) {
+                yValues.push(number);
+                number /= 2;
+            }
+            else {
+                yValues.push(number);
+                number = number * 3 + 1;
+            }
+        }
+
+        xValues.push(index);
+        yValues.push(number);
+
+        let points = [['X', 'Y']]
+
+        for (let i = 0; i < xValues.length; i++) {
+            points.push([xValues[i], yValues[i]]);
+            table.innerHTML += `<tr><td>${yValues[i]}</td></tr>`;
+        }
+
+        const data = google.visualization.arrayToDataTable(points);
+
+        // Set Options
+        const options = {
+            legend: 'none',
+            vAxis: {
+                gridlines: {
+                    color: 'rgb(220, 220, 220)'
+                }      
+            },
+            hAxis: {
+                gridlines: {
+                    color: 'rgb(220, 220, 220)'
+                }   
+            },
+            responsive: true,
+            chartArea: {'width': '80%', 'height': '80%'},
+            pointSize: 5,
+        };
+
+        const chart = new google.visualization.LineChart(document.getElementById('myChart'));
+        chart.draw(data, options);
+    }
+</script>
+</html>
